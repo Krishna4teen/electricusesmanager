@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AnalyzeRouteImport } from './routes/analyze'
 import { Route as AppliancesRouteImport } from './routes/appliances'
+import { Route as HistoryRouteImport } from './routes/history'
 import { Route as TipsRouteImport } from './routes/tips'
 
 const IndexRoute = IndexRouteImport.update({
@@ -35,6 +36,11 @@ const AppliancesRoute = AppliancesRouteImport.update({
   path: '/appliances',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HistoryRoute = HistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TipsRoute = TipsRouteImport.update({
   id: '/tips',
   path: '/tips',
@@ -46,6 +52,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/analyze': typeof AnalyzeRoute
   '/appliances': typeof AppliancesRoute
+  '/history': typeof HistoryRoute
   '/tips': typeof TipsRoute
 }
 export interface FileRoutesByTo {
@@ -53,6 +60,7 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/analyze': typeof AnalyzeRoute
   '/appliances': typeof AppliancesRoute
+  '/history': typeof HistoryRoute
   '/tips': typeof TipsRoute
 }
 export interface FileRoutesById {
@@ -61,14 +69,22 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/analyze': typeof AnalyzeRoute
   '/appliances': typeof AppliancesRoute
+  '/history': typeof HistoryRoute
   '/tips': typeof TipsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/analyze' | '/appliances' | '/tips'
+  fullPaths: '/' | '/about' | '/analyze' | '/appliances' | '/history' | '/tips'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/analyze' | '/appliances' | '/tips'
-  id: '__root__' | '/' | '/about' | '/analyze' | '/appliances' | '/tips'
+  to: '/' | '/about' | '/analyze' | '/appliances' | '/history' | '/tips'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/analyze'
+    | '/appliances'
+    | '/history'
+    | '/tips'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -76,6 +92,7 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   AnalyzeRoute: typeof AnalyzeRoute
   AppliancesRoute: typeof AppliancesRoute
+  HistoryRoute: typeof HistoryRoute
   TipsRoute: typeof TipsRoute
 }
 
@@ -109,6 +126,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppliancesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/history': {
+      id: '/history'
+      path: '/history'
+      fullPath: '/history'
+      preLoaderRoute: typeof HistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tips': {
       id: '/tips'
       path: '/tips'
@@ -124,6 +148,7 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   AnalyzeRoute: AnalyzeRoute,
   AppliancesRoute: AppliancesRoute,
+  HistoryRoute: HistoryRoute,
   TipsRoute: TipsRoute,
 }
 export const routeTree = rootRouteImport
