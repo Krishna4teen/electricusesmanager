@@ -13,3 +13,7 @@
 - [ ] Save / load / delete history + trend comparison
 - [ ] Printable report
 - [ ] Accessibility + responsive pass
+- [ ] Visual direction from the reference image: approachable green palette,
+      project-flow cards on Home, student-friendly card layout, prominent
+      calculation / recommendations / history / tips concepts, inviting landing.
+      Adapt, do not copy the infographic.
