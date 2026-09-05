@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from "react";
 
-import { newAppliance, type Appliance } from "./eco";
+import { DEFAULT_CURRENCY, newAppliance, type Appliance } from "./eco";
 
 export type Draft = {
   name: string;
@@ -14,8 +14,8 @@ const STORAGE_KEY = "eco-watt-draft-v1";
 function defaultDraft(): Draft {
   return {
     name: "My household",
-    rate: 0.15,
-    currency: "USD",
+    rate: 8,
+    currency: DEFAULT_CURRENCY,
     appliances: [
       newAppliance({ name: "Air Conditioner (1.5 ton)", watts: 1500, hoursPerDay: 8 }),
       newAppliance({ name: "Refrigerator", watts: 150, hoursPerDay: 24 }),
