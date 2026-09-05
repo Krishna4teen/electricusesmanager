@@ -224,7 +224,7 @@ function AnalyzePage() {
                   <CardTitle className="text-base">Monthly use by appliance</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ConsumptionBarChart rows={rows} />
+                  <ConsumptionBarChart rows={rows} currency={draft.currency} rate={draft.rate} />
                 </CardContent>
               </Card>
               <Card className="print-break">
@@ -232,7 +232,7 @@ function AnalyzePage() {
                   <CardTitle className="text-base">Share of total consumption</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ConsumptionPieChart rows={rows} />
+                  <ConsumptionPieChart rows={rows} currency={draft.currency} rate={draft.rate} />
                 </CardContent>
               </Card>
             </div>
@@ -242,7 +242,7 @@ function AnalyzePage() {
                 <CardTitle className="text-base">Consumption across time horizons</CardTitle>
               </CardHeader>
               <CardContent>
-                <HorizonChart daily={totals.dailyKwh} monthly={totals.monthlyKwh} yearly={totals.yearlyKwh} />
+                <HorizonChart daily={totals.dailyKwh} monthly={totals.monthlyKwh} yearly={totals.yearlyKwh} currency={draft.currency} rate={draft.rate} />
               </CardContent>
             </Card>
 

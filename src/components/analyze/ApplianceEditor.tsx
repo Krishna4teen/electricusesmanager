@@ -1,8 +1,18 @@
-import { Plus, Trash2 } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Trash2 } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -10,13 +20,102 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CURRENCIES, newAppliance, validateAppliance, type Appliance } from "@/lib/eco";
+import {
+  APPLIANCE_CATEGORIES,
+  APPLIANCE_PRESETS,
+  CURRENCIES,
+  currencySymbol,
+  newAppliance,
+  PRESET_NOTE,
+  validateAppliance,
+  type Appliance,
+} from "@/lib/eco";
 import type { Draft } from "@/lib/draft";
 
 type Props = {
   draft: Draft;
   onChange: (update: (prev: Draft) => Draft) => void;
 };
+
+export function AppliancePicker({ onPick }: { onPick: (a: Appliance) => void }) {
+  const [open, setOpen] = useState(false);
+
+  const grouped = useMemo(
+    () =>
+      APPLIANCE_CATEGORIES.map((category) => ({
+        category,
+        items: APPLIANCE_PRESETS.filter((p) => p.category === category),
+      })).filter((g) => g.items.length > 0),
+    [],
+  );
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          aria-label="Search the appliance list and add one"
+          className="w-full justify-between sm:w-96"
+        >
+          Search appliances to add…
+          <ChevronsUpDown className="size-4 opacity-60" aria-hidden="true" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[min(24rem,90vw)] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Type a name, e.g. fridge, fan, oven…" />
+          <CommandList className="max-h-72">
+            <CommandEmpty>
+              <div className="space-y-2 p-2 text-sm">
+                <p>No match in the list.</p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    onPick(newAppliance({ name: "", watts: 100, hoursPerDay: 1 }));
+                    setOpen(false);
+                  }}
+                >
+                  Add a custom appliance instead
+                </Button>
+              </div>
+            </CommandEmpty>
+            {grouped.map((group) => (
+              <CommandGroup key={group.category} heading={group.category}>
+                {group.items.map((p) => (
+                  <CommandItem
+                    key={p.name}
+                    value={`${p.name} ${p.category}`}
+                    onSelect={() => {
+                      onPick(
+                        newAppliance({
+                          name: p.name,
+                          watts: p.watts,
+                          hoursPerDay: p.typicalHours,
+                        }),
+                      );
+                      setOpen(false);
+                    }}
+                  >
+                    <Check className="size-4 opacity-0" aria-hidden="true" />
+                    <span className="flex-1">{p.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {p.watts} W · {p.typicalHours} h
+                    </span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            ))}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 export function ApplianceEditor({ draft, onChange }: Props) {
   const update = (id: string, patch: Partial<Appliance>) =>
@@ -28,11 +127,15 @@ export function ApplianceEditor({ draft, onChange }: Props) {
   const remove = (id: string) =>
     onChange((prev) => ({ ...prev, appliances: prev.appliances.filter((a) => a.id !== id) }));
 
-  const add = () =>
-    onChange((prev) => ({ ...prev, appliances: [...prev.appliances, newAppliance()] }));
+  const add = (appliance?: Appliance) =>
+    onChange((prev) => ({
+      ...prev,
+      appliances: [...prev.appliances, appliance ?? newAppliance()],
+    }));
 
   return (
     <div className="space-y-6">
+
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor="analysis-name">Analysis name</Label>
@@ -44,7 +147,9 @@ export function ApplianceEditor({ draft, onChange }: Props) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="tariff">Electricity rate (per kWh)</Label>
+          <Label htmlFor="tariff">
+            Electricity rate ({currencySymbol(draft.currency).trim()} per kWh)
+          </Label>
           <Input
             id="tariff"
             type="number"
@@ -60,31 +165,45 @@ export function ApplianceEditor({ draft, onChange }: Props) {
           </p>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="currency">Currency</Label>
+          <Label htmlFor="currency">Display currency</Label>
           <Select
             value={draft.currency}
             onValueChange={(v) => onChange((p) => ({ ...p, currency: v }))}
           >
-            <SelectTrigger id="currency">
+            <SelectTrigger id="currency" aria-describedby="currency-help">
               <SelectValue placeholder="Currency" />
             </SelectTrigger>
             <SelectContent>
               {CURRENCIES.map((c) => (
                 <SelectItem key={c.code} value={c.code}>
-                  {c.code} ({c.symbol})
+                  {c.symbol.trim()} {c.code} — {c.label}
                 </SelectItem>
               ))}
             </SelectContent>
+
           </Select>
         </div>
+      </div>
+
+      <div className="space-y-3 rounded-xl border border-border bg-muted/30 p-4">
+        <div className="space-y-1.5">
+          <span id="picker-label" className="text-sm font-medium">
+            Add an appliance from the list
+          </span>
+          <div aria-labelledby="picker-label">
+            <AppliancePicker onPick={(a) => add(a)} />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">{PRESET_NOTE}</p>
       </div>
 
       <div className="space-y-4">
         {draft.appliances.length === 0 && (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            No appliances yet. Add one below, or pick from the Appliances page.
+            No appliances yet. Search the list above, or add a custom one below.
           </p>
         )}
+
 
         {draft.appliances.map((a, index) => {
           const errors = validateAppliance(a);
@@ -182,7 +301,7 @@ export function ApplianceEditor({ draft, onChange }: Props) {
         })}
       </div>
 
-      <Button type="button" variant="secondary" onClick={add}>
+      <Button type="button" variant="secondary" onClick={() => add()}>
         <Plus className="size-4" aria-hidden="true" />
         Add appliance
       </Button>
