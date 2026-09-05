@@ -128,8 +128,8 @@ describe("presets, currencies and fallback advice", () => {
     ], 8);
     const recs = buildRecommendations(rows);
     expect(recs.length).toBeGreaterThan(0);
-    expect(recs[0].appliance).toBe("Zorblax widget");
-    expect(recs[0].monthlyKwhSaved).toBeGreaterThan(0);
+    expect(recs[0]!.appliance).toBe("Zorblax widget");
+    expect(recs[0]!.monthlyKwhSaved).toBeGreaterThan(0);
   });
 
   it("ranks recommendations by recorded consumption", () => {
@@ -138,6 +138,6 @@ describe("presets, currencies and fallback advice", () => {
       newAppliance({ name: "Air conditioner", watts: 1500, hoursPerDay: 8, quantity: 1 }),
     ], 8);
     const recs = buildRecommendations(rows);
-    expect(recs[0].appliance).toBe("Air conditioner");
+    expect(recs[0]!.appliance).toBe("Air conditioner");
   });
 });
