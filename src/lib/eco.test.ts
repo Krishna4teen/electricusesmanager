@@ -123,9 +123,9 @@ describe("presets, currencies and fallback advice", () => {
   });
 
   it("gives general advice for an unmatched custom appliance", () => {
-    const rows = computeResults([
+    const { rows } = computeResults([
       newAppliance({ name: "Zorblax widget", watts: 500, hoursPerDay: 4, quantity: 1 }),
-    ]);
+    ], 8);
     const recs = buildRecommendations(rows);
     expect(recs.length).toBeGreaterThan(0);
     expect(recs[0].appliance).toBe("Zorblax widget");
@@ -133,10 +133,10 @@ describe("presets, currencies and fallback advice", () => {
   });
 
   it("ranks recommendations by recorded consumption", () => {
-    const rows = computeResults([
+    const { rows } = computeResults([
       newAppliance({ name: "Ceiling fan", watts: 75, hoursPerDay: 6, quantity: 1 }),
       newAppliance({ name: "Air conditioner", watts: 1500, hoursPerDay: 8, quantity: 1 }),
-    ]);
+    ], 8);
     const recs = buildRecommendations(rows);
     expect(recs[0].appliance).toBe("Air conditioner");
   });
