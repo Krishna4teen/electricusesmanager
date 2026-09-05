@@ -14,7 +14,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { formatKwh, type ApplianceResult } from "@/lib/eco";
+import { formatKwh, formatMoney, type ApplianceResult } from "@/lib/eco";
 
 const PALETTE = [
   "var(--color-chart-1)",
@@ -24,7 +24,13 @@ const PALETTE = [
   "var(--color-chart-5)",
 ];
 
-export function ConsumptionBarChart({ rows }: { rows: ApplianceResult[] }) {
+type MoneyProps = { currency: string; rate: number };
+
+export function ConsumptionBarChart({
+  rows,
+  currency,
+  rate,
+}: { rows: ApplianceResult[] } & MoneyProps) {
   const data = rows.map((r) => ({ name: r.name || "Unnamed", kwh: Number(r.monthlyKwh.toFixed(2)) }));
   return (
     <div className="h-72 w-full" role="img" aria-label="Monthly consumption per appliance">
@@ -44,7 +50,7 @@ export function ConsumptionBarChart({ rows }: { rows: ApplianceResult[] }) {
             label={{ value: "kWh / month", angle: -90, position: "insideLeft", fontSize: 11 }}
           />
           <Tooltip
-            formatter={(v: number) => formatKwh(v)}
+            formatter={(v: number) => `${formatKwh(v)} · ${formatMoney(v * rate, currency)}`}
             contentStyle={{
               background: "var(--color-card)",
               border: "1px solid var(--color-border)",
@@ -63,7 +69,11 @@ export function ConsumptionBarChart({ rows }: { rows: ApplianceResult[] }) {
   );
 }
 
-export function ConsumptionPieChart({ rows }: { rows: ApplianceResult[] }) {
+export function ConsumptionPieChart({
+  rows,
+  currency,
+  rate,
+}: { rows: ApplianceResult[] } & MoneyProps) {
   const data = rows
     .filter((r) => r.monthlyKwh > 0)
     .map((r) => ({ name: r.name || "Unnamed", value: Number(r.monthlyKwh.toFixed(2)) }));
@@ -78,7 +88,7 @@ export function ConsumptionPieChart({ rows }: { rows: ApplianceResult[] }) {
           </Pie>
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Tooltip
-            formatter={(v: number) => formatKwh(v)}
+            formatter={(v: number) => `${formatKwh(v)} · ${formatMoney(v * rate, currency)}`}
             contentStyle={{
               background: "var(--color-card)",
               border: "1px solid var(--color-border)",
@@ -96,11 +106,13 @@ export function HorizonChart({
   daily,
   monthly,
   yearly,
+  currency,
+  rate,
 }: {
   daily: number;
   monthly: number;
   yearly: number;
-}) {
+} & MoneyProps) {
   const data = [
     { period: "Daily", kwh: Number(daily.toFixed(2)) },
     { period: "Monthly", kwh: Number(monthly.toFixed(2)) },
@@ -119,7 +131,7 @@ export function HorizonChart({
             width={70}
           />
           <Tooltip
-            formatter={(v: number) => formatKwh(v)}
+            formatter={(v: number) => `${formatKwh(v)} · ${formatMoney(v * rate, currency)}`}
             contentStyle={{
               background: "var(--color-card)",
               border: "1px solid var(--color-border)",
@@ -136,8 +148,10 @@ export function HorizonChart({
 
 export function TrendChart({
   data,
+  currency,
 }: {
   data: { label: string; monthlyKwh: number; monthlyCost: number }[];
+  currency: string;
 }) {
   return (
     <div className="h-72 w-full" role="img" aria-label="Monthly consumption trend across saved analyses">
@@ -147,6 +161,9 @@ export function TrendChart({
           <XAxis dataKey="label" tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} />
           <YAxis tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} />
           <Tooltip
+            formatter={(v: number, name: string) =>
+              name.startsWith("Cost") ? formatMoney(v, currency) : formatKwh(v)
+            }
             contentStyle={{
               background: "var(--color-card)",
               border: "1px solid var(--color-border)",
@@ -166,7 +183,7 @@ export function TrendChart({
           <Line
             type="monotone"
             dataKey="monthlyCost"
-            name="Cost / month"
+            name={`Cost / month (${currency})`}
             stroke="var(--color-chart-3)"
             strokeWidth={2}
             dot={{ r: 3 }}
