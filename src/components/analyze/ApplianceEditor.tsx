@@ -185,12 +185,25 @@ export function ApplianceEditor({ draft, onChange }: Props) {
         </div>
       </div>
 
+      <div className="space-y-3 rounded-xl border border-border bg-muted/30 p-4">
+        <div className="space-y-1.5">
+          <span id="picker-label" className="text-sm font-medium">
+            Add an appliance from the list
+          </span>
+          <div aria-labelledby="picker-label">
+            <AppliancePicker onPick={(a) => add(a)} />
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground">{PRESET_NOTE}</p>
+      </div>
+
       <div className="space-y-4">
         {draft.appliances.length === 0 && (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            No appliances yet. Add one below, or pick from the Appliances page.
+            No appliances yet. Search the list above, or add a custom one below.
           </p>
         )}
+
 
         {draft.appliances.map((a, index) => {
           const errors = validateAppliance(a);
