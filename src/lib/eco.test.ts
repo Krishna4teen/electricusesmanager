@@ -96,3 +96,43 @@ describe("validation", () => {
     expect(validateAppliance(ac)).toEqual({});
   });
 });
+
+describe("presets, currencies and fallback advice", () => {
+  it("offers 50+ presets across every category", () => {
+    expect(APPLIANCE_PRESETS.length).toBeGreaterThanOrEqual(50);
+    for (const category of APPLIANCE_CATEGORIES) {
+      expect(APPLIANCE_PRESETS.some((p) => p.category === category)).toBe(true);
+    }
+    for (const p of APPLIANCE_PRESETS) {
+      expect(p.watts).toBeGreaterThan(0);
+      expect(p.typicalHours).toBeGreaterThan(0);
+    }
+  });
+
+  it("defaults to INR and supports the practical currency options", () => {
+    expect(DEFAULT_CURRENCY).toBe("INR");
+    for (const code of ["INR", "USD", "EUR", "GBP", "BDT", "AED"]) {
+      expect(CURRENCIES.some((c) => c.code === code)).toBe(true);
+    }
+    expect(formatMoney(100, "INR")).toContain("₹");
+  });
+
+  it("gives general advice for an unmatched custom appliance", () => {
+    const rows = calculateAppliances([
+      newAppliance({ name: "Zorblax widget", watts: 500, hoursPerDay: 4, quantity: 1 }),
+    ]);
+    const recs = buildRecommendations(rows);
+    expect(recs.length).toBeGreaterThan(0);
+    expect(recs[0].appliance).toBe("Zorblax widget");
+    expect(recs[0].monthlyKwhSaved).toBeGreaterThan(0);
+  });
+
+  it("ranks recommendations by recorded consumption", () => {
+    const rows = calculateAppliances([
+      newAppliance({ name: "Ceiling fan", watts: 75, hoursPerDay: 6, quantity: 1 }),
+      newAppliance({ name: "Air conditioner", watts: 1500, hoursPerDay: 8, quantity: 1 }),
+    ]);
+    const recs = buildRecommendations(rows);
+    expect(recs[0].appliance).toBe("Air conditioner");
+  });
+});
