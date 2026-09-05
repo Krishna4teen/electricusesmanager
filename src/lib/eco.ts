@@ -371,29 +371,128 @@ export type PresetAppliance = {
   note: string;
 };
 
+export const APPLIANCE_CATEGORIES = [
+  "Lighting",
+  "Cooling",
+  "Heating",
+  "Kitchen",
+  "Entertainment",
+  "Computing & Office",
+  "Cleaning & Laundry",
+  "Other household",
+] as const;
+
+export const PRESET_NOTE =
+  "Example rating only — real wattage varies by model, size and age. Check the label on your own appliance and edit the value.";
+
 export const APPLIANCE_PRESETS: PresetAppliance[] = [
-  { name: "Air Conditioner (1.5 ton)", watts: 1500, typicalHours: 8, category: "Cooling & Heating", note: "Largest single load in most homes." },
-  { name: "Space Heater", watts: 2000, typicalHours: 4, category: "Cooling & Heating", note: "Resistive heating; very expensive per hour." },
-  { name: "Ceiling Fan", watts: 75, typicalHours: 12, category: "Cooling & Heating", note: "Cheap comfort — a fraction of AC cost." },
-  { name: "Standing Fan", watts: 55, typicalHours: 10, category: "Cooling & Heating", note: "Good first choice on mild days." },
-  { name: "Refrigerator", watts: 150, typicalHours: 24, category: "Kitchen", note: "Runs continuously but cycles its compressor." },
+  // ------------------------------------------------------------- Lighting
+  { name: "LED Bulb (9W)", watts: 9, typicalHours: 6, category: "Lighting", note: "The efficient baseline for lighting." },
+  { name: "LED Bulb (12W)", watts: 12, typicalHours: 6, category: "Lighting", note: "Brighter LED for living rooms." },
+  { name: "CFL Bulb", watts: 20, typicalHours: 6, category: "Lighting", note: "Older energy saver; LED is better still." },
+  { name: "Incandescent Bulb", watts: 60, typicalHours: 6, category: "Lighting", note: "Replace with LED for about 80% savings." },
+  { name: "Halogen Lamp", watts: 100, typicalHours: 3, category: "Lighting", note: "Runs hot and wastes most energy as heat." },
+  { name: "Fluorescent Tube Light", watts: 36, typicalHours: 6, category: "Lighting", note: "LED tubes are a direct upgrade." },
+  { name: "LED Tube Light", watts: 18, typicalHours: 6, category: "Lighting", note: "Common replacement for tube fittings." },
+  { name: "LED Panel / Downlight", watts: 15, typicalHours: 5, category: "Lighting", note: "Often installed in groups — set the unit count." },
+  { name: "Outdoor Security Light", watts: 30, typicalHours: 10, category: "Lighting", note: "A sensor cuts most of the runtime." },
+  { name: "Decorative String Lights", watts: 25, typicalHours: 4, category: "Lighting", note: "Small load, easy to forget switched on." },
+  { name: "Study / Desk Lamp", watts: 11, typicalHours: 4, category: "Lighting", note: "Task lighting beats lighting a whole room." },
+
+  // -------------------------------------------------------------- Cooling
+  { name: "Air Conditioner (1 ton)", watts: 1000, typicalHours: 8, category: "Cooling", note: "Sized for a small bedroom." },
+  { name: "Air Conditioner (1.5 ton)", watts: 1500, typicalHours: 8, category: "Cooling", note: "Largest single load in most homes." },
+  { name: "Air Conditioner (2 ton)", watts: 2000, typicalHours: 8, category: "Cooling", note: "For large or open-plan rooms." },
+  { name: "Inverter Air Conditioner (1.5 ton)", watts: 1100, typicalHours: 8, category: "Cooling", note: "Modulates output, so it averages lower." },
+  { name: "Window Air Conditioner", watts: 1400, typicalHours: 6, category: "Cooling", note: "Seal the gaps around the frame." },
+  { name: "Air Cooler (evaporative)", watts: 200, typicalHours: 8, category: "Cooling", note: "Far cheaper than AC in dry climates." },
+  { name: "Ceiling Fan", watts: 75, typicalHours: 12, category: "Cooling", note: "Cheap comfort — a fraction of AC cost." },
+  { name: "BLDC Ceiling Fan", watts: 30, typicalHours: 12, category: "Cooling", note: "Efficient motor; pays back over a season." },
+  { name: "Standing / Pedestal Fan", watts: 55, typicalHours: 10, category: "Cooling", note: "Good first choice on mild days." },
+  { name: "Table Fan", watts: 40, typicalHours: 8, category: "Cooling", note: "Point it at people, not the room." },
+  { name: "Exhaust Fan", watts: 35, typicalHours: 3, category: "Cooling", note: "Run only while cooking or showering." },
+  { name: "Dehumidifier", watts: 300, typicalHours: 6, category: "Cooling", note: "Use a humidistat instead of running non-stop." },
+  { name: "Air Purifier", watts: 45, typicalHours: 10, category: "Cooling", note: "Lower fan speeds use much less power." },
+
+  // -------------------------------------------------------------- Heating
+  { name: "Space Heater", watts: 2000, typicalHours: 4, category: "Heating", note: "Resistive heating; very expensive per hour." },
+  { name: "Oil-Filled Radiator", watts: 1500, typicalHours: 5, category: "Heating", note: "Holds heat, so a thermostat helps a lot." },
+  { name: "Halogen / Radiant Heater", watts: 1200, typicalHours: 3, category: "Heating", note: "Heats people quickly, rooms poorly." },
+  { name: "Electric Blanket", watts: 100, typicalHours: 6, category: "Heating", note: "A cheap alternative to heating a bedroom." },
+  { name: "Storage Water Heater (geyser)", watts: 3000, typicalHours: 2, category: "Heating", note: "Insulate the tank and lower the thermostat." },
+  { name: "Instant Water Heater", watts: 4500, typicalHours: 0.5, category: "Heating", note: "Huge draw, but only while water runs." },
+  { name: "Immersion Rod", watts: 1500, typicalHours: 0.5, category: "Heating", note: "Never leave it unattended." },
+  { name: "Underfloor Heating (room)", watts: 800, typicalHours: 6, category: "Heating", note: "Zone it so unused rooms stay off." },
+  { name: "Heat Pump (small)", watts: 900, typicalHours: 8, category: "Heating", note: "Several times more efficient than resistive heat." },
+
+  // --------------------------------------------------------------- Kitchen
+  { name: "Refrigerator (single door)", watts: 120, typicalHours: 24, category: "Kitchen", note: "Runs continuously but cycles its compressor." },
+  { name: "Refrigerator (double door)", watts: 200, typicalHours: 24, category: "Kitchen", note: "Keep coils clean and seals tight." },
   { name: "Chest Freezer", watts: 200, typicalHours: 24, category: "Kitchen", note: "Keep it full and defrosted." },
   { name: "Electric Kettle", watts: 2000, typicalHours: 0.3, category: "Kitchen", note: "Huge wattage, very short runtime." },
   { name: "Microwave Oven", watts: 1200, typicalHours: 0.5, category: "Kitchen", note: "More efficient than a full oven." },
   { name: "Electric Oven", watts: 2400, typicalHours: 1, category: "Kitchen", note: "Preheat only when the recipe needs it." },
+  { name: "Induction Cooktop", watts: 1800, typicalHours: 1, category: "Kitchen", note: "Efficient, but still a heavy load." },
+  { name: "Electric Hotplate", watts: 1500, typicalHours: 1, category: "Kitchen", note: "Match pan size to the plate." },
+  { name: "Rice Cooker", watts: 700, typicalHours: 0.75, category: "Kitchen", note: "Switch off keep-warm when done." },
   { name: "Toaster", watts: 900, typicalHours: 0.2, category: "Kitchen", note: "Small contributor overall." },
-  { name: "Washing Machine", watts: 500, typicalHours: 1, category: "Laundry", note: "Most energy goes to heating water." },
-  { name: "Clothes Dryer", watts: 3000, typicalHours: 1, category: "Laundry", note: "Line drying saves nearly all of this." },
-  { name: "Electric Iron", watts: 1100, typicalHours: 0.5, category: "Laundry", note: "Iron in batches while hot." },
-  { name: "Water Heater (geyser)", watts: 3000, typicalHours: 2, category: "Water", note: "Insulate the tank and lower the thermostat." },
-  { name: "LED Bulb", watts: 9, typicalHours: 6, category: "Lighting", note: "The efficient baseline for lighting." },
-  { name: "Incandescent Bulb", watts: 60, typicalHours: 6, category: "Lighting", note: "Replace with LED for ~80% savings." },
-  { name: "Fluorescent Tube", watts: 36, typicalHours: 6, category: "Lighting", note: "LED tubes are a direct upgrade." },
-  { name: "LED Television", watts: 100, typicalHours: 5, category: "Electronics", note: "Watch out for standby draw." },
-  { name: "Desktop Computer", watts: 200, typicalHours: 6, category: "Electronics", note: "Enable sleep after 10 minutes idle." },
-  { name: "Laptop", watts: 60, typicalHours: 6, category: "Electronics", note: "Far cheaper than a desktop." },
-  { name: "Wi-Fi Router", watts: 10, typicalHours: 24, category: "Electronics", note: "Small, but never switched off." },
-  { name: "Water Pump", watts: 750, typicalHours: 1, category: "Utility", note: "Fix leaks before increasing pump time." },
+  { name: "Sandwich Maker / Griller", watts: 800, typicalHours: 0.3, category: "Kitchen", note: "Quick cooking, low daily total." },
+  { name: "Air Fryer", watts: 1500, typicalHours: 0.5, category: "Kitchen", note: "Usually beats the oven for small meals." },
+  { name: "Blender / Mixer Grinder", watts: 500, typicalHours: 0.3, category: "Kitchen", note: "Short bursts only." },
+  { name: "Food Processor", watts: 700, typicalHours: 0.2, category: "Kitchen", note: "Minor part of the monthly bill." },
+  { name: "Coffee Machine", watts: 1000, typicalHours: 0.4, category: "Kitchen", note: "Turn off the warming plate." },
+  { name: "Electric Pressure Cooker", watts: 1000, typicalHours: 0.6, category: "Kitchen", note: "Faster cooking means less energy." },
+  { name: "Dishwasher", watts: 1500, typicalHours: 1, category: "Kitchen", note: "Full loads on eco mode cost far less." },
+  { name: "Range Hood / Chimney", watts: 200, typicalHours: 1.5, category: "Kitchen", note: "Run it only while cooking." },
+  { name: "Water Dispenser / Purifier", watts: 100, typicalHours: 12, category: "Kitchen", note: "Cooling and heating modes add up." },
+
+  // --------------------------------------------------------- Entertainment
+  { name: "LED Television (32\")", watts: 60, typicalHours: 5, category: "Entertainment", note: "Watch out for standby draw." },
+  { name: "LED Television (43\")", watts: 100, typicalHours: 5, category: "Entertainment", note: "Lower the backlight to save power." },
+  { name: "LED Television (55\" 4K)", watts: 150, typicalHours: 5, category: "Entertainment", note: "Bigger and brighter means more watts." },
+  { name: "Smart TV Streaming Stick", watts: 5, typicalHours: 5, category: "Entertainment", note: "Tiny, but often left plugged in." },
+  { name: "Set-Top Box / Decoder", watts: 25, typicalHours: 24, category: "Entertainment", note: "Rarely switched off — a classic standby load." },
+  { name: "Home Theatre / Soundbar", watts: 90, typicalHours: 3, category: "Entertainment", note: "Use a switched strip with the TV." },
+  { name: "Gaming Console", watts: 150, typicalHours: 3, category: "Entertainment", note: "Enable rest mode power saving." },
+  { name: "Bluetooth Speaker (charging)", watts: 15, typicalHours: 3, category: "Entertainment", note: "Unplug once charged." },
+  { name: "Radio / Music System", watts: 40, typicalHours: 3, category: "Entertainment", note: "Modest but steady." },
+  { name: "Projector", watts: 250, typicalHours: 2, category: "Entertainment", note: "Lamp models draw far more than LED ones." },
+
+  // ----------------------------------------------------- Computing & Office
+  { name: "Desktop Computer", watts: 200, typicalHours: 6, category: "Computing & Office", note: "Enable sleep after 10 minutes idle." },
+  { name: "Gaming Desktop", watts: 450, typicalHours: 4, category: "Computing & Office", note: "Graphics cards dominate the draw." },
+  { name: "Computer Monitor", watts: 30, typicalHours: 6, category: "Computing & Office", note: "Switch off rather than screensaver." },
+  { name: "Laptop", watts: 60, typicalHours: 6, category: "Computing & Office", note: "Far cheaper to run than a desktop." },
+  { name: "Tablet (charging)", watts: 12, typicalHours: 2, category: "Computing & Office", note: "Small, frequent charge cycles." },
+  { name: "Mobile Phone Charger", watts: 10, typicalHours: 3, category: "Computing & Office", note: "Unplug when not charging." },
+  { name: "Wi-Fi Router", watts: 10, typicalHours: 24, category: "Computing & Office", note: "Small, but never switched off." },
+  { name: "Inkjet Printer", watts: 30, typicalHours: 0.5, category: "Computing & Office", note: "Idle draw matters more than printing." },
+  { name: "Laser Printer", watts: 500, typicalHours: 0.3, category: "Computing & Office", note: "Spikes hard while the fuser heats." },
+  { name: "UPS / Inverter (standby)", watts: 50, typicalHours: 24, category: "Computing & Office", note: "Charging losses run all day." },
+
+  // ------------------------------------------------------ Cleaning & Laundry
+  { name: "Washing Machine (top load)", watts: 500, typicalHours: 1, category: "Cleaning & Laundry", note: "Most energy goes to heating water." },
+  { name: "Washing Machine (front load)", watts: 800, typicalHours: 1, category: "Cleaning & Laundry", note: "Cold or eco cycles cut it sharply." },
+  { name: "Clothes Dryer", watts: 3000, typicalHours: 1, category: "Cleaning & Laundry", note: "Line drying saves nearly all of this." },
+  { name: "Electric Iron", watts: 1100, typicalHours: 0.5, category: "Cleaning & Laundry", note: "Iron in batches while hot." },
+  { name: "Steam Iron / Garment Steamer", watts: 1500, typicalHours: 0.3, category: "Cleaning & Laundry", note: "Short sessions, high wattage." },
+  { name: "Vacuum Cleaner", watts: 1200, typicalHours: 0.5, category: "Cleaning & Laundry", note: "Empty the bag to keep suction efficient." },
+  { name: "Robot Vacuum (docked)", watts: 40, typicalHours: 4, category: "Cleaning & Laundry", note: "Mostly charging, not cleaning." },
+  { name: "Pressure Washer", watts: 1600, typicalHours: 0.3, category: "Cleaning & Laundry", note: "Occasional use only." },
+
+  // -------------------------------------------------------- Other household
+  { name: "Water Pump (0.5 HP)", watts: 400, typicalHours: 1, category: "Other household", note: "Fix leaks before increasing pump time." },
+  { name: "Water Pump (1 HP)", watts: 750, typicalHours: 1, category: "Other household", note: "A float switch stops needless running." },
+  { name: "Hair Dryer", watts: 1400, typicalHours: 0.2, category: "Other household", note: "High watts, very short use." },
+  { name: "Electric Shaver / Trimmer", watts: 15, typicalHours: 0.2, category: "Other household", note: "Negligible on the bill." },
+  { name: "Sewing Machine", watts: 100, typicalHours: 1, category: "Other household", note: "Depends entirely on hobby hours." },
+  { name: "Doorbell / Intercom", watts: 5, typicalHours: 24, category: "Other household", note: "Always on, but tiny." },
+  { name: "CCTV Camera", watts: 8, typicalHours: 24, category: "Other household", note: "Count every camera as a unit." },
+  { name: "Electric Vehicle Charger (home)", watts: 3300, typicalHours: 3, category: "Other household", note: "Often the single biggest new load." },
+  { name: "Aquarium Pump & Light", watts: 40, typicalHours: 12, category: "Other household", note: "Timer the light, keep the pump running." },
+  { name: "Garden / Lawn Mower (electric)", watts: 1200, typicalHours: 0.5, category: "Other household", note: "Seasonal — set the days per week." },
+  { name: "Power Tools (drill, saw)", watts: 800, typicalHours: 0.3, category: "Other household", note: "Occasional bursts of use." },
+  { name: "Other / Custom appliance", watts: 100, typicalHours: 1, category: "Other household", note: "Start here and enter your own name and rating." },
 ];
 
 export function newAppliance(preset?: Partial<Appliance>): Appliance {
