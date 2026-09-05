@@ -147,7 +147,9 @@ export function ApplianceEditor({ draft, onChange }: Props) {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="tariff">Electricity rate (per kWh)</Label>
+          <Label htmlFor="tariff">
+            Electricity rate ({currencySymbol(draft.currency).trim()} per kWh)
+          </Label>
           <Input
             id="tariff"
             type="number"
@@ -163,21 +165,22 @@ export function ApplianceEditor({ draft, onChange }: Props) {
           </p>
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="currency">Currency</Label>
+          <Label htmlFor="currency">Display currency</Label>
           <Select
             value={draft.currency}
             onValueChange={(v) => onChange((p) => ({ ...p, currency: v }))}
           >
-            <SelectTrigger id="currency">
+            <SelectTrigger id="currency" aria-describedby="currency-help">
               <SelectValue placeholder="Currency" />
             </SelectTrigger>
             <SelectContent>
               {CURRENCIES.map((c) => (
                 <SelectItem key={c.code} value={c.code}>
-                  {c.code} ({c.symbol})
+                  {c.symbol.trim()} {c.code} — {c.label}
                 </SelectItem>
               ))}
             </SelectContent>
+
           </Select>
         </div>
       </div>
