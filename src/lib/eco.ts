@@ -207,30 +207,75 @@ const has = (...words: string[]) => (name: string) =>
 const RULES: Rule[] = [
   {
     id: "ac-thermostat",
-    match: has("air condition", "air-condition", "a/c", "ac ", "aircon", "split unit"),
+    match: has("air condition", "air-condition", "a/c", "aircon", "split unit"),
     applies: (r) => r.hoursPerDay > 3,
     savingFraction: 0.2,
-    title: (r) => `Raise the ${r.name} setpoint by 2°C`,
+    title: (r) => `Raise the ${r.name} setpoint by about 2°C`,
     detail: (r) =>
-      `Your ${r.name} runs ${r.hoursPerDay}h a day. Each degree of cooling costs roughly 6–10% more energy, so a 2°C higher setpoint plus a clean filter typically cuts about 20% of its use.`,
+      `Your ${r.name} runs ${r.hoursPerDay}h a day. Each degree of extra cooling typically costs several percent more energy, so a slightly higher setpoint plus a clean filter often reduces its use noticeably.`,
   },
   {
     id: "ac-hours",
     match: has("air condition", "air-condition", "aircon", "a/c", "split unit"),
     applies: (r) => r.hoursPerDay >= 8,
     savingFraction: 0.15,
-    title: (r) => `Put the ${r.name} on a timer`,
+    title: (r) => `Put the ${r.name} on a timer or sleep mode`,
     detail: (r) =>
-      `Running ${r.hoursPerDay}h daily means it cools an empty or sleeping house for part of that time. A timer or sleep mode that shaves ~1.5h a day saves around 15%.`,
+      `Running ${r.hoursPerDay}h daily usually includes time when the room is empty or everyone is asleep. Trimming roughly an hour and a half a day cuts its share of the bill.`,
+  },
+  {
+    id: "air-cooler",
+    match: has("air cooler", "evaporative"),
+    applies: () => true,
+    savingFraction: 0.15,
+    title: (r) => `Use the ${r.name} instead of AC on mild days`,
+    detail: () =>
+      `Evaporative coolers draw a small fraction of an air conditioner's power. Keep the pads clean and a window slightly open so the air can circulate.`,
+  },
+  {
+    id: "dehumidifier",
+    match: has("dehumidif"),
+    applies: () => true,
+    savingFraction: 0.2,
+    title: (r) => `Let the ${r.name} run on a humidity setting`,
+    detail: () =>
+      `Set a target humidity rather than running continuously, keep doors closed in the room being dried, and empty the tank so it does not restart needlessly.`,
+  },
+  {
+    id: "purifier",
+    match: has("purifier"),
+    applies: (r) => r.hoursPerDay >= 8,
+    savingFraction: 0.15,
+    title: (r) => `Run the ${r.name} on a lower fan speed`,
+    detail: () =>
+      `Fan speed drives most of the power draw. Auto or low mode in occupied rooms, plus a clean filter, keeps the same benefit for less energy.`,
   },
   {
     id: "heater",
-    match: has("heater", "geyser", "boiler", "water heat", "immersion"),
+    match: has("heater", "geyser", "boiler", "water heat", "immersion", "radiator", "underfloor"),
     applies: () => true,
     savingFraction: 0.25,
     title: (r) => `Insulate and time the ${r.name}`,
     detail: (r) =>
-      `Water and space heating are pure resistive loads. A tank jacket, a lower thermostat (60°C) and heating only before use commonly removes a quarter of the ${r.name}'s consumption.`,
+      `Water and space heating are mostly resistive loads. A tank jacket, a moderate thermostat setting (around 60°C for water) and heating only shortly before use commonly removes a large share of the ${r.name}'s consumption.`,
+  },
+  {
+    id: "heat-pump",
+    match: has("heat pump"),
+    applies: () => true,
+    savingFraction: 0.15,
+    title: (r) => `Let the ${r.name} hold a steady temperature`,
+    detail: () =>
+      `Heat pumps are most efficient running gently at a stable setpoint rather than in short, hot bursts. Keep the outdoor unit clear and the filters clean.`,
+  },
+  {
+    id: "electric-blanket",
+    match: has("blanket"),
+    applies: () => true,
+    savingFraction: 0.3,
+    title: (r) => `Preheat with the ${r.name}, then switch it off`,
+    detail: () =>
+      `Warming the bed for a short while before sleeping usually gives the same comfort as leaving it on all night, at a fraction of the energy.`,
   },
   {
     id: "fridge",
@@ -238,53 +283,170 @@ const RULES: Rule[] = [
     applies: () => true,
     savingFraction: 0.15,
     title: (r) => `Service the ${r.name}`,
-    detail: (r) =>
-      `A fridge runs 24/7, so small inefficiencies compound. Clean condenser coils, check the door seal and keep it out of direct sun to recover roughly 15%.`,
+    detail: () =>
+      `A fridge or freezer runs continuously, so small inefficiencies compound. Clean the condenser coils, check the door seal, leave a gap behind it and keep it out of direct sun.`,
   },
   {
     id: "lighting",
-    match: has("bulb", "light", "lamp", "tube", "incandescent", "halogen"),
-    applies: () => true,
-    savingFraction: 0.8,
-    title: (r) => `Switch ${r.name} to LED`,
+    match: has("bulb", "light", "lamp", "tube", "incandescent", "halogen", "cfl", "downlight"),
+    applies: (r) => r.watts >= 15,
+    savingFraction: 0.7,
+    title: (r) => `Switch the ${r.name} to LED`,
     detail: (r) =>
-      `At ${r.watts}W each, these are far above LED equivalents. LED replacements use roughly 80% less power for the same brightness and last several years.`,
+      `At ${r.watts}W each, these sit well above LED equivalents. LED replacements give similar brightness for a small share of the power and last for years.`,
   },
   {
-    id: "iron-dryer",
-    match: has("iron", "dryer", "kettle", "microwave", "oven", "cooker", "toaster"),
+    id: "lighting-hours",
+    match: has("bulb", "light", "lamp", "tube", "downlight"),
+    applies: (r) => r.hoursPerDay >= 6,
+    savingFraction: 0.15,
+    title: (r) => `Use daylight and switch off the ${r.name} in empty rooms`,
+    detail: (r) =>
+      `${r.hoursPerDay}h a day is a long lit period. Open curtains where practical, light the task rather than the whole room, and add a timer or sensor for outdoor fittings.`,
+  },
+  {
+    id: "kettle",
+    match: has("kettle"),
     applies: () => true,
     savingFraction: 0.2,
-    title: (r) => `Batch your ${r.name} use`,
-    detail: (r) =>
-      `High-wattage kitchen and laundry appliances are cheapest when used in one full batch instead of several short runs — about 20% less energy for the same result.`,
+    title: (r) => `Boil only what you need in the ${r.name}`,
+    detail: () =>
+      `A kettle's cost is set by how much water it heats. Filling it to the number of cups you will actually use, and descaling it regularly, keeps the runtime short.`,
+  },
+  {
+    id: "oven",
+    match: has("oven", "cooker", "hotplate", "induction", "air fryer", "toaster", "griller"),
+    applies: () => true,
+    savingFraction: 0.2,
+    title: (r) => `Batch and right-size your ${r.name} use`,
+    detail: () =>
+      `High-wattage cooking appliances are cheapest used in one full session rather than several short ones. Match the pan to the ring, keep lids on, and pick the smallest appliance that will do the job.`,
+  },
+  {
+    id: "microwave",
+    match: has("microwave"),
+    applies: () => true,
+    savingFraction: 0.1,
+    title: (r) => `Prefer the ${r.name} for small portions`,
+    detail: () =>
+      `A microwave heats food directly and usually finishes far sooner than a full oven, so it is generally the cheaper option for reheating and small meals.`,
+  },
+  {
+    id: "rice-cooker",
+    match: has("rice cooker", "pressure cooker", "coffee"),
+    applies: () => true,
+    savingFraction: 0.15,
+    title: (r) => `Switch off keep-warm on the ${r.name}`,
+    detail: () =>
+      `Keep-warm and warming plates can run for hours after cooking finishes. Turning the appliance off at the socket once you are done removes that tail.`,
   },
   {
     id: "washer",
     match: has("washing", "washer", "dishwash"),
     applies: () => true,
     savingFraction: 0.3,
-    title: (r) => `Run the ${r.name} full and cold`,
+    title: (r) => `Run the ${r.name} full and on a cooler cycle`,
     detail: (r) =>
-      `Most of a wash cycle's energy heats water. Full loads on a cold or eco cycle typically cut about 30% of the ${r.name}'s consumption.`,
+      `Most of a cycle's energy heats water. Full loads on a cold or eco programme typically cut a large part of the ${r.name}'s consumption, and the clean is usually just as good.`,
+  },
+  {
+    id: "dryer",
+    match: has("dryer"),
+    applies: () => true,
+    savingFraction: 0.4,
+    title: (r) => `Line dry instead of using the ${r.name} where you can`,
+    detail: () =>
+      `Tumble drying is one of the most expensive household loads. Spinning clothes at a higher speed first, and air drying when the weather allows, avoids most of it.`,
+  },
+  {
+    id: "iron",
+    match: has("iron", "steamer"),
+    applies: () => true,
+    savingFraction: 0.2,
+    title: (r) => `Iron in one batch with the ${r.name}`,
+    detail: () =>
+      `Most of the energy goes into heating up. Doing several garments in one session, and switching off a little before you finish to use the residual heat, keeps the total down.`,
+  },
+  {
+    id: "vacuum",
+    match: has("vacuum", "pressure washer"),
+    applies: () => true,
+    savingFraction: 0.15,
+    title: (r) => `Keep the ${r.name} maintained`,
+    detail: () =>
+      `Empty the bag or bin and clean the filters — a blocked machine works harder for longer. A lower power setting is usually enough for hard floors.`,
   },
   {
     id: "standby",
-    match: has("tv", "television", "console", "decoder", "set-top", "router", "computer", "pc", "desktop"),
-    applies: (r) => r.hoursPerDay >= 6,
+    match: has("tv", "television", "console", "decoder", "set-top", "soundbar", "home theatre", "speaker", "projector", "radio", "music system", "streaming"),
+    applies: () => true,
     savingFraction: 0.15,
     title: (r) => `Cut standby time on the ${r.name}`,
     detail: (r) =>
-      `${r.hoursPerDay}h a day usually includes idle time. A switched power strip and sleep settings remove roughly 15% with no change to how you use it.`,
+      `${r.hoursPerDay}h a day usually includes idle and standby time. A switched power strip for the whole setup, plus a lower screen brightness, reduces it with no real change to how you use it.`,
+  },
+  {
+    id: "computing",
+    match: has("computer", "pc ", "desktop", "laptop", "monitor", "printer", "workstation"),
+    applies: () => true,
+    savingFraction: 0.15,
+    title: (r) => `Set sleep and shutdown on the ${r.name}`,
+    detail: () =>
+      `Sleep after about 10 minutes idle, switch the display off rather than using a screensaver, and shut down overnight. Printers and monitors on the same strip go off together.`,
+  },
+  {
+    id: "always-on",
+    match: has("router", "modem", "ups", "inverter", "cctv", "camera", "doorbell", "dispenser", "aquarium"),
+    applies: () => true,
+    savingFraction: 0.1,
+    title: (r) => `Review the always-on ${r.name}`,
+    detail: (r) =>
+      `The ${r.name} draws power around the clock, so even a small wattage becomes a steady monthly figure. Check whether every unit is needed, and put non-essential ones on a timer.`,
+  },
+  {
+    id: "charger",
+    match: has("charger", "charging"),
+    applies: () => true,
+    savingFraction: 0.1,
+    title: (r) => `Unplug the ${r.name} once charging finishes`,
+    detail: () =>
+      `Chargers keep drawing a trickle while plugged in. Charging during the day when you can see it is done, then unplugging, removes that idle draw.`,
+  },
+  {
+    id: "ev",
+    match: has("vehicle charger", "ev charger"),
+    applies: () => true,
+    savingFraction: 0.1,
+    title: (r) => `Schedule the ${r.name} for off-peak hours`,
+    detail: () =>
+      `Home vehicle charging is often the largest new load in a house. If your tariff has cheaper off-peak periods, scheduling charging into them lowers the cost of the same energy.`,
   },
   {
     id: "fan",
     match: has("fan"),
-    applies: (r) => r.hoursPerDay >= 10,
+    applies: (r) => r.hoursPerDay >= 8,
     savingFraction: 0.2,
     title: (r) => `Run the ${r.name} on a lower speed`,
     detail: (r) =>
-      `Fans are cheap to run but ${r.hoursPerDay}h a day adds up. A lower speed setting and switching off in empty rooms saves about 20%.`,
+      `Fans are cheap to run, but ${r.hoursPerDay}h a day adds up across ${r.quantity} unit${r.quantity > 1 ? "s" : ""}. A lower speed and switching off in empty rooms trims it; efficient BLDC fans use far less for the same airflow.`,
+  },
+  {
+    id: "pump",
+    match: has("pump"),
+    applies: () => true,
+    savingFraction: 0.15,
+    title: (r) => `Avoid needless running of the ${r.name}`,
+    detail: () =>
+      `Fix leaks and dripping taps first, then add a float switch or timer so the pump stops as soon as the tank is full.`,
+  },
+  {
+    id: "hair-dryer",
+    match: has("hair dryer", "shaver", "trimmer", "sewing", "power tool", "mower", "drill"),
+    applies: () => true,
+    savingFraction: 0.1,
+    title: (r) => `Keep ${r.name} sessions short`,
+    detail: () =>
+      `These are high-wattage but short-use items. Using them for less time, or on a lower setting where one exists, is the only real lever.`,
   },
 ];
 
