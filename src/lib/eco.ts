@@ -470,16 +470,19 @@ export function buildRecommendations(rows: ApplianceResult[]): Recommendation[] 
           priority: row.monthlyKwh * rule.savingFraction,
         });
       }
-    } else if (row.share >= 0.1) {
+    } else {
+      // No specific rule matched (typically a custom appliance name):
+      // fall back to general, non-guaranteed household guidance.
       recs.push({
         id: `${row.id}-generic`,
-        title: `Reduce daily use of the ${row.name}`,
-        detail: `The ${row.name} accounts for ${(row.share * 100).toFixed(0)}% of your monthly consumption. Trimming about an hour of daily use, or replacing it with a higher-efficiency model, removes roughly 10%.`,
+        title: `Review how long the ${row.name} runs`,
+        detail: `The ${row.name} accounts for ${(row.share * 100).toFixed(0)}% of your recorded monthly consumption (${row.monthlyKwh.toFixed(1)} kWh). Switch it off when nobody is using it, trim roughly an hour of daily runtime where practical, keep it maintained, and check the rating label before replacing it with a more efficient model.`,
         appliance: row.name,
         monthlyKwhSaved: row.monthlyKwh * GENERIC_FRACTION,
         priority: row.monthlyKwh * GENERIC_FRACTION,
       });
     }
+
   }
 
   return recs.sort((a, b) => b.priority - a.priority);
