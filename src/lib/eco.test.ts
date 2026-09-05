@@ -1,7 +1,12 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  APPLIANCE_CATEGORIES,
+  APPLIANCE_PRESETS,
   buildRecommendations,
+  CURRENCIES,
+  DEFAULT_CURRENCY,
+  formatMoney,
   buildReductionPlan,
   computeResults,
   dailyKwhFor,
@@ -118,7 +123,7 @@ describe("presets, currencies and fallback advice", () => {
   });
 
   it("gives general advice for an unmatched custom appliance", () => {
-    const rows = calculateAppliances([
+    const rows = computeResults([
       newAppliance({ name: "Zorblax widget", watts: 500, hoursPerDay: 4, quantity: 1 }),
     ]);
     const recs = buildRecommendations(rows);
@@ -128,7 +133,7 @@ describe("presets, currencies and fallback advice", () => {
   });
 
   it("ranks recommendations by recorded consumption", () => {
-    const rows = calculateAppliances([
+    const rows = computeResults([
       newAppliance({ name: "Ceiling fan", watts: 75, hoursPerDay: 6, quantity: 1 }),
       newAppliance({ name: "Air conditioner", watts: 1500, hoursPerDay: 8, quantity: 1 }),
     ]);
