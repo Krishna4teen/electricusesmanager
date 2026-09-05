@@ -33,19 +33,24 @@ export const DAYS_PER_MONTH = 30;
 export const DAYS_PER_YEAR = 365;
 
 export const CURRENCIES = [
-  { code: "USD", symbol: "$" },
-  { code: "EUR", symbol: "€" },
-  { code: "GBP", symbol: "£" },
-  { code: "INR", symbol: "₹" },
-  { code: "NGN", symbol: "₦" },
-  { code: "KES", symbol: "KSh" },
-  { code: "ZAR", symbol: "R" },
-  { code: "ETB", symbol: "Br" },
+  { code: "INR", symbol: "₹", label: "Indian Rupee" },
+  { code: "USD", symbol: "$", label: "US Dollar" },
+  { code: "EUR", symbol: "€", label: "Euro" },
+  { code: "GBP", symbol: "£", label: "British Pound" },
+  { code: "BDT", symbol: "৳", label: "Bangladeshi Taka" },
+  { code: "AED", symbol: "د.إ ", label: "UAE Dirham" },
+  { code: "NGN", symbol: "₦", label: "Nigerian Naira" },
+  { code: "KES", symbol: "KSh ", label: "Kenyan Shilling" },
+  { code: "ZAR", symbol: "R", label: "South African Rand" },
+  { code: "ETB", symbol: "Br ", label: "Ethiopian Birr" },
 ] as const;
+
+export const DEFAULT_CURRENCY = "INR";
 
 export function currencySymbol(code: string): string {
   return CURRENCIES.find((c) => c.code === code)?.symbol ?? code + " ";
 }
+
 
 export function formatMoney(value: number, code: string): string {
   return `${currencySymbol(code)}${value.toLocaleString(undefined, {
