@@ -301,7 +301,7 @@ export function ApplianceEditor({ draft, onChange }: Props) {
         })}
       </div>
 
-      <Button type="button" variant="secondary" onClick={add}>
+      <Button type="button" variant="secondary" onClick={() => add()}>
         <Plus className="size-4" aria-hidden="true" />
         Add appliance
       </Button>
