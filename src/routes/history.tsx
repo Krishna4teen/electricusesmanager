@@ -173,7 +173,7 @@ function HistoryPage() {
                 <CardDescription>Monthly kWh and cost across your saved analyses.</CardDescription>
               </CardHeader>
               <CardContent>
-                <TrendChart data={trend} />
+                <TrendChart data={trend} currency={latest!.currency} />
               </CardContent>
             </Card>
           )}
