@@ -19,6 +19,8 @@
  */
 
 @theme inline {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Outfit", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -103,6 +105,7 @@
   --chart-4: oklch(0.6 0.14 250);
   --chart-5: oklch(0.6 0.18 20);
   --gradient-eco: linear-gradient(135deg, var(--primary), var(--primary-glow));
+  --gradient-about: linear-gradient(145deg, var(--secondary), var(--background) 48%, var(--accent));
   --shadow-eco: 0 12px 32px -18px color-mix(in oklab, var(--primary) 60%, transparent);
   --sidebar: oklch(0.97 0.02 145);
   --sidebar-foreground: oklch(0.24 0.035 155);
@@ -112,6 +115,16 @@
   --sidebar-accent-foreground: oklch(0.3 0.06 155);
   --sidebar-border: oklch(0.89 0.025 148);
   --sidebar-ring: oklch(0.52 0.13 155);
+}
+
+@utility about-ambient {
+  background: var(--gradient-about);
+}
+
+@utility glass-panel {
+  background: color-mix(in oklab, var(--color-card) 82%, transparent);
+  box-shadow: var(--shadow-eco);
+  backdrop-filter: blur(14px);
 }
 
 
