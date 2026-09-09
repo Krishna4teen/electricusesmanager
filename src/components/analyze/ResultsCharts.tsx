@@ -151,7 +151,7 @@ export function TrendChart({
   currency,
 }: {
   data: { label: string; monthlyKwh: number; monthlyCost: number }[];
-  currency: string;
+  currency?: string;
 }) {
   return (
     <div className="h-72 w-full" role="img" aria-label="Monthly consumption trend across saved analyses">
@@ -162,7 +162,7 @@ export function TrendChart({
           <YAxis tick={{ fontSize: 11, fill: "var(--color-muted-foreground)" }} />
           <Tooltip
             formatter={(v: number, name: string) =>
-              name.startsWith("Cost") ? formatMoney(v, currency) : formatKwh(v)
+              name.startsWith("Cost") && currency ? formatMoney(v, currency) : formatKwh(v)
             }
             contentStyle={{
               background: "var(--color-card)",
@@ -180,14 +180,16 @@ export function TrendChart({
             strokeWidth={2}
             dot={{ r: 3 }}
           />
-          <Line
-            type="monotone"
-            dataKey="monthlyCost"
-            name={`Cost / month (${currency})`}
-            stroke="var(--color-chart-3)"
-            strokeWidth={2}
-            dot={{ r: 3 }}
-          />
+          {currency && (
+            <Line
+              type="monotone"
+              dataKey="monthlyCost"
+              name={`Cost / month (${currency})`}
+              stroke="var(--color-chart-3)"
+              strokeWidth={2}
+              dot={{ r: 3 }}
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>

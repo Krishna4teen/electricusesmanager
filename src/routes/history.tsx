@@ -67,6 +67,10 @@ function HistoryPage() {
     monthlyKwh: Number(a.totals.monthlyKwh.toFixed(1)),
     monthlyCost: Number(a.totals.monthlyCost.toFixed(2)),
   }));
+  const trendCurrency =
+    analyses.length > 0 && analyses.every((a) => a.currency === analyses[0]?.currency)
+      ? analyses[0]?.currency
+      : undefined;
 
   const latest = analyses[0];
   const previous = analyses[1];
@@ -170,10 +174,14 @@ function HistoryPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-base">Consumption trend</CardTitle>
-                <CardDescription>Monthly kWh and cost across your saved analyses.</CardDescription>
+                <CardDescription>
+                  {trendCurrency
+                    ? `Monthly kWh and cost in ${trendCurrency} across your saved analyses.`
+                    : "Monthly kWh across saved analyses. Cost is omitted because the records use different currencies."}
+                </CardDescription>
               </CardHeader>
               <CardContent>
-                <TrendChart data={trend} currency={latest!.currency} />
+                <TrendChart data={trend} currency={trendCurrency} />
               </CardContent>
             </Card>
           )}

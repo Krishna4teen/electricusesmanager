@@ -135,7 +135,6 @@ export function ApplianceEditor({ draft, onChange }: Props) {
 
   return (
     <div className="space-y-6">
-
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
           <Label htmlFor="analysis-name">Analysis name</Label>
@@ -180,8 +179,10 @@ export function ApplianceEditor({ draft, onChange }: Props) {
                 </SelectItem>
               ))}
             </SelectContent>
-
           </Select>
+          <p id="currency-help" className="text-xs text-muted-foreground">
+            Used for costs, charts, saved history and reports.
+          </p>
         </div>
       </div>
 
@@ -203,8 +204,6 @@ export function ApplianceEditor({ draft, onChange }: Props) {
             No appliances yet. Search the list above, or add a custom one below.
           </p>
         )}
-
-
         {draft.appliances.map((a, index) => {
           const errors = validateAppliance(a);
           return (
