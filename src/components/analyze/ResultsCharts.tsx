@@ -151,7 +151,7 @@ export function TrendChart({
   currency,
 }: {
   data: { label: string; monthlyKwh: number; monthlyCost: number }[];
-  currency?: string;
+  currency?: string | undefined;
 }) {
   return (
     <div className="h-72 w-full" role="img" aria-label="Monthly consumption trend across saved analyses">
