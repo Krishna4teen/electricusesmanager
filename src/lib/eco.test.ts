@@ -14,6 +14,7 @@ import {
   statusFor,
   validateAppliance,
 } from "./eco";
+import { rotatingSelection } from "../routes/tips";
 
 const ac = newAppliance({
   name: "Air Conditioner (1.5 ton)",
@@ -139,5 +140,14 @@ describe("presets, currencies and fallback advice", () => {
     ], 8);
     const recs = buildRecommendations(rows);
     expect(recs[0]!.appliance).toBe("Air conditioner");
+  });
+});
+
+describe("rotating general guidance", () => {
+  it("returns a balanced window and changes it for the next visit", () => {
+    const tips = ["a", "b", "c", "d", "e", "f", "g"];
+    expect(rotatingSelection(tips, 0, 3)).toEqual(["a", "b", "c"]);
+    expect(rotatingSelection(tips, 1, 3)).toEqual(["b", "c", "d"]);
+    expect(rotatingSelection(tips, 6, 3)).toEqual(["g", "a", "b"]);
   });
 });
