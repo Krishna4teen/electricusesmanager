@@ -11,6 +11,7 @@ import {
   Utensils,
   WashingMachine,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -43,6 +44,14 @@ type Group = {
   tips: string[];
 };
 
+const TIPS_PER_GROUP = 6;
+const VISIT_KEY = "eco-watt-tips-visit";
+
+export function rotatingSelection(tips: string[], offset: number, limit = TIPS_PER_GROUP) {
+  if (tips.length <= limit) return tips;
+  return Array.from({ length: limit }, (_, index) => tips[(offset + index) % tips.length] ?? "").filter(Boolean);
+}
+
 const GROUPS: Group[] = [
   {
     icon: Lightbulb,
@@ -55,6 +64,9 @@ const GROUPS: Group[] = [
       "Switch lights off in empty rooms; the cheapest light is the one that is never on.",
       "Put outdoor and security lighting on a timer or motion sensor instead of leaving it on all night.",
       "Keep bulbs, shades and fittings clean so dirt does not reduce the useful light reaching the room.",
+      "Choose lighter wall and shade colours where practical so available daylight reaches farther into the room.",
+      "Review decorative and garden lights periodically; shorten schedules when daylight hours change.",
+      "When one switch controls many fittings, consider whether separate task lighting would meet the need with fewer lamps on.",
     ],
   },
   {
@@ -69,6 +81,9 @@ const GROUPS: Group[] = [
       "Consider fans alone on mild days, after comparing the ratings of your own fan and air conditioner.",
       "Use timers or sleep mode overnight rather than cooling an empty or sleeping house at full output.",
       "Check efficiency and energy labels before buying, and choose a correctly sized unit for the room.",
+      "Keep the outdoor condenser clear of leaves and obstructions, following the manufacturer's maintenance guidance.",
+      "Seal obvious gaps around doors and windows before increasing cooling time.",
+      "Avoid placing heat-producing devices near the thermostat because they can make cooling run longer.",
     ],
   },
   {
@@ -82,6 +97,9 @@ const GROUPS: Group[] = [
       "Leave a gap around the appliance for airflow, and keep it away from ovens and direct sunlight.",
       "Keep a freezer reasonably full and defrosted — thick ice makes it work harder.",
       "Review whether a lightly used second fridge needs to run continuously, using its label or a plug-in meter where available.",
+      "Check that food packages do not block the internal air vents.",
+      "Use containers or covers for liquids so added moisture does not increase frost and condensation.",
+      "Compare the energy label and suitable capacity before replacing a refrigerator or freezer.",
     ],
   },
   {
@@ -95,6 +113,9 @@ const GROUPS: Group[] = [
       "Skip preheating unless the recipe genuinely needs it, and avoid opening the oven door repeatedly.",
       "Switch off keep-warm modes and warming plates once cooking is finished.",
       "Run the dishwasher on a full load and use its eco programme where one is available.",
+      "Prepare several items in one oven session when food safety and recipes allow.",
+      "Use residual heat by switching an electric hob off shortly before cooking finishes when it is safe to do so.",
+      "Keep electric hob surfaces and pan bases clean and flat for good contact.",
     ],
   },
   {
@@ -108,6 +129,9 @@ const GROUPS: Group[] = [
       "Line dry when weather and space allow to avoid the electricity used by a tumble-dryer cycle.",
       "Iron in one batch while the iron is hot, and switch it off a little before you finish.",
       "Empty vacuum bags and clean filters — a blocked machine runs longer for the same result.",
+      "Use the machine's load-sensing or eco setting when available rather than automatically choosing the longest cycle.",
+      "Clean a tumble dryer's lint filter after use and keep its vents unobstructed.",
+      "Treat stains early so a normal cycle can work without repeated washing.",
     ],
   },
   {
@@ -121,6 +145,9 @@ const GROUPS: Group[] = [
       "Shorter showers and a low-flow showerhead reduce hot water use directly.",
       "Fix dripping hot taps — a slow leak on the hot side is paid for twice.",
       "Instant heaters draw a very large current but only while water flows; keep sessions short.",
+      "Check exposed hot-water pipes for safe, suitable insulation to reduce heat loss between the heater and tap.",
+      "Turn off a storage heater during long periods away, following its safety and restart instructions.",
+      "Choose shower temperature and flow for comfort without running hotter water than needed.",
     ],
   },
   {
@@ -133,6 +160,9 @@ const GROUPS: Group[] = [
       "Set consoles to a low-power rest mode, or off entirely, instead of full standby.",
       "Turn the TV off when it is only background noise — a radio or speaker uses far less.",
       "Set-top boxes and decoders often run at full power all day; check whether yours has a standby schedule.",
+      "Disable automatic console or TV start-up when another connected device turns on if you do not use that feature.",
+      "Use an automatic sleep timer so a screen does not continue running after viewing ends.",
+      "Review picture-processing modes that increase brightness or power without improving your normal viewing.",
     ],
   },
   {
@@ -146,6 +176,9 @@ const GROUPS: Group[] = [
       "Unplug phone, tablet and tool chargers once the device is full.",
       "Group printer, monitor and speakers on one strip so nothing sits idle overnight.",
       "Routers, cameras and dispensers run 24/7; check that every unit you are paying for is still needed.",
+      "Close demanding apps and browser tabs when finished so the computer can return to a lower-power state.",
+      "Enable battery-saver or efficiency mode for routine work when full performance is unnecessary.",
+      "Schedule backups and updates together where practical instead of keeping a computer awake every night.",
     ],
   },
   {
@@ -160,6 +193,9 @@ const GROUPS: Group[] = [
       "Count every unit — eight bulbs or three fans behave very differently from one.",
       "If your tariff has off-peak periods, shift heavy loads such as laundry or vehicle charging into them.",
       "Re-run your analysis after making changes so you can see the effect in your own numbers.",
+      "Use a plug-in energy meter, where available and suitable, to check devices with uncertain or changing power draw.",
+      "Compare your latest bill with a similar season rather than assuming every month should be identical.",
+      "Make one manageable change at a time and record it, so later comparisons are easier to interpret.",
     ],
   },
   {
@@ -172,11 +208,23 @@ const GROUPS: Group[] = [
       "Block draughts around doors and windows before turning the heat up.",
       "Preheat a bed with an electric blanket, then switch it off rather than leaving it on all night.",
       "Heat pumps work best held at a steady, moderate setting rather than in short hot bursts.",
+      "Keep radiators, heaters and warm-air outlets clear of furniture and curtains.",
+      "Close curtains after dark while keeping them safely away from heaters.",
+      "Check filters and service intervals in the manufacturer's instructions before each heating season.",
     ],
   },
 ];
 
 function TipsPage() {
+  const [visit, setVisit] = useState(0);
+
+  useEffect(() => {
+    const previous = Number.parseInt(window.sessionStorage.getItem(VISIT_KEY) ?? "0", 10);
+    const next = Number.isFinite(previous) ? previous + 1 : 1;
+    window.sessionStorage.setItem(VISIT_KEY, String(next));
+    setVisit(next);
+  }, []);
+
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12">
       <header className="mb-10">
@@ -197,7 +245,7 @@ function TipsPage() {
       </header>
 
       <div className="grid gap-6 md:grid-cols-2">
-        {GROUPS.map((group) => (
+        {GROUPS.map((group, groupIndex) => (
           <Card key={group.title} className="h-full">
             <CardHeader className="flex-row items-start gap-3 space-y-0">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -210,7 +258,7 @@ function TipsPage() {
             </CardHeader>
             <CardContent>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                {group.tips.map((tip) => (
+                {rotatingSelection(group.tips, visit + groupIndex * 2).map((tip) => (
                   <li key={tip} className="flex gap-2">
                     <span
                       className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary"
