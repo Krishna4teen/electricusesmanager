@@ -17,4 +17,4 @@
       project-flow cards on Home, student-friendly card layout, prominent
       calculation / recommendations / history / tips concepts, inviting landing.
       Adapt, do not copy the infographic.
-- [ ] Expand the guidance library and rotate a fresh, balanced Tips selection on every visit.
+- [x] Expand the guidance library and rotate a fresh, balanced Tips selection on every visit.
