@@ -18,4 +18,3 @@
       calculation / recommendations / history / tips concepts, inviting landing.
       Adapt, do not copy the infographic.
 - [x] Expand the guidance library and rotate a fresh, balanced Tips selection on every visit.
-- [ ] Restrict saved-analysis access to the owner and verify privacy-preserving history access.
